@@ -1,0 +1,721 @@
+﻿@{
+    ViewData["Title"] = "Contain Virus";
+}
+
+<div class="container mt-4">
+    <div class="intro-text mb-4 d-flex align-items-start gap-2">
+        <p class="lead mb-0 flex-grow-1">Simulate strategic containment strategies on a grid-based system. Mark infected regions and observe how barriers are optimally placed to minimize spread and protect unaffected areas.</p>
+        <span class="info-icon" data-bs-toggle="modal" data-bs-target="#infoModal" role="button" aria-label="Show usage manual">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </span>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl">
+            <div class="modal-content info-modal">
+                <div class="modal-header info-modal-header">
+                    <h5 class="modal-title" id="infoModalLabel">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="me-2">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <path d="M12 16V12M12 8H12.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        Usage Manual & Algorithm Guide
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body info-modal-body">
+                    <div class="info-section">
+                        <h6 class="info-section-title">
+                            <span class="info-icon-small">📋</span>
+                            How to Use This Tool
+                        </h6>
+                        <ol class="info-list">
+                            <li><strong>Select Grid Dimensions:</strong> Choose the number of rows and columns (1-20) for your simulation grid and click "Create Grid".</li>
+                            <li><strong>Mark Infected Cells:</strong> Click on any cell in the grid to mark it as infected. Click again to unmark. Infected cells are shown with a teal virus icon.</li>
+                            <li><strong>Start Simulation:</strong> Once you've marked at least one infected cell, click "Start Algorithm" to begin the containment simulation.</li>
+                            <li><strong>View Results:</strong> After the algorithm completes, you'll see:
+                                <ul>
+                                    <li>Total number of walls needed to contain the spread</li>
+                                    <li>Days required to fully isolate all threats</li>
+                                    <li>Percentage of cells successfully saved</li>
+                                </ul>
+                            </li>
+                            <li><strong>Explore Day-by-Day:</strong> Use the "Previous Day" and "Next Day" buttons to navigate through each step of the containment process and see how the algorithm progressed.</li>
+                        </ol>
+                    </div>
+
+                    <div class="info-section">
+                        <h6 class="info-section-title">
+                            <span class="info-icon-small">🧠</span>
+                            How the Algorithm Works
+                        </h6>
+                        <p class="info-text">
+                            This simulation uses a strategic containment algorithm that identifies and isolates infected regions 
+                            to prevent further spread. The algorithm operates in discrete time steps (days) and follows this process:
+                        </p>
+                        <div class="algorithm-steps">
+                            <div class="step-card">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h6 class="step-title">Identify Threat Regions</h6>
+                                    <p>On each day, the algorithm scans the grid to identify all connected regions of infected cells. Each region represents a potential threat zone that could spread to neighboring healthy cells.</p>
+                                </div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h6 class="step-title">Assess Spread Potential</h6>
+                                    <p>For each infected region, the algorithm calculates how many healthy cells would become infected if this region were allowed to spread. This helps prioritize which regions pose the greatest threat.</p>
+                                </div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h6 class="step-title">Build Containment Walls</h6>
+                                    <p>The algorithm selects the region with the highest spread potential and builds walls around it. These walls completely isolate the region, preventing any further spread from those cells.</p>
+                                </div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h6 class="step-title">Allow Natural Spread</h6>
+                                    <p>After isolating the highest-priority region, remaining uncontained infected cells spread to their adjacent healthy neighbors. This simulates the natural progression of the threat.</p>
+                                </div>
+                            </div>
+                            <div class="step-card">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h6 class="step-title">Repeat Until Contained</h6>
+                                    <p>The process repeats each day: identify new threats, prioritize by spread potential, isolate the most dangerous region, then allow remaining threats to spread. This continues until all threats are contained.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h6 class="info-section-title">
+                            <span class="info-icon-small">🎨</span>
+                            Understanding the Visualization
+                        </h6>
+                        <div class="legend-grid">
+                            <div class="legend-item">
+                                <div class="legend-color infected-legend"></div>
+                                <div class="legend-text">
+                                    <strong>Infected Cells</strong>
+                                    <p>Cells that are currently infected and can spread to neighbors</p>
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color newly-infected-legend"></div>
+                                <div class="legend-text">
+                                    <strong>Newly Infected</strong>
+                                    <p>Cells that became infected during the current day</p>
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color contained-legend"></div>
+                                <div class="legend-text">
+                                    <strong>Isolated/Quarantined</strong>
+                                    <p>Infected cells that have been isolated with walls</p>
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color wall-legend"></div>
+                                <div class="legend-text">
+                                    <strong>Containment Walls</strong>
+                                    <p>Red dashed lines showing barriers that prevent spread</p>
+                                </div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color empty-legend"></div>
+                                <div class="legend-text">
+                                    <strong>Healthy Cells</strong>
+                                    <p>Uninfected cells that are safe from the threat</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <h6 class="info-section-title">
+                            <span class="info-icon-small">💡</span>
+                            Key Concepts
+                        </h6>
+                        <ul class="info-list">
+                            <li><strong>Optimal Strategy:</strong> The algorithm always prioritizes containing the region with the highest spread potential, minimizing the total number of walls needed while maximizing the number of cells saved.</li>
+                            <li><strong>Greedy Approach:</strong> By making the best local decision at each step (isolating the most dangerous region first), the algorithm achieves an efficient global solution.</li>
+                            <li><strong>Progressive Containment:</strong> Walls are built incrementally, allowing you to see how the containment strategy evolves over time.</li>
+                            <li><strong>Real-time Simulation:</strong> Watch as threats spread and barriers are strategically placed to protect healthy areas.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer info-modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Dimension Selection -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Step 1: Select Grid Dimensions</h5>
+            <p class="card-subtitle text-muted mb-3">Choose the size of the grid to simulate virus containment</p>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="rows" class="form-label">Rows</label>
+                    <input type="number" class="form-control" id="rows" min="1" max="20" value="1">
+                </div>
+                <div class="col-md-4">
+                    <label for="cols" class="form-label">Columns</label>
+                    <input type="number" class="form-control" id="cols" min="1" max="20" value="1">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-primary" id="createGridBtn">Create Grid</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grid Display -->
+    <div class="card mb-4" id="gridCard" style="display: none;">
+        <div class="card-body">
+            <h5 class="card-title">Step 2: Click cells to mark as infected</h5>
+            <div id="gridContainer" class="d-flex justify-content-center my-4">
+                <!-- Grid will be generated here -->
+            </div>
+            <div class="d-flex gap-2 justify-content-center">
+                <button class="btn btn-primary" id="solveBtn" disabled>Start Algorithm</button>
+                <button class="btn btn-secondary" id="clearBtn">Clear All</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Display -->
+    <div class="card mb-4" id="resultCard" style="display: none;">
+        <div class="card-body">
+            <h5 class="card-title">Result</h5>
+            <div id="resultContent">
+                <!-- Result will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Day-by-Day Logs -->
+    <div class="card" id="logsCard" style="display: none;">
+        <div class="card-body">
+            <h5 class="card-title">Day-by-Day Progress</h5>
+            <div id="dayDetails">
+                <p class="text-muted">Loading...</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <button class="btn btn-secondary" id="prevDayBtn" disabled>
+                    <span>←</span> Previous Day
+                </button>
+                <div id="dayIndicator" class="text-muted"></div>
+                <button class="btn btn-secondary" id="nextDayBtn" disabled>
+                    Next Day <span>→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let grid = [];
+        let rows = 0;
+        let cols = 0;
+        let isGridCreated = false;
+        let logs = [];
+        let initialGrid = [];
+        let currentDayIndex = -1; // -1 = Day 0 (initial), 0+ = Day 1, 2, etc.
+
+        document.getElementById('createGridBtn').addEventListener('click', function() {
+            rows = parseInt(document.getElementById('rows').value);
+            cols = parseInt(document.getElementById('cols').value);
+            
+            if (rows < 1 || rows > 20 || cols < 1 || cols > 20) {
+                alert('Please enter valid dimensions (1-20)');
+                return;
+            }
+
+            createGrid();
+            isGridCreated = true;
+            document.getElementById('gridCard').style.display = 'block';
+            document.getElementById('solveBtn').disabled = false;
+            document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('logsCard').style.display = 'none';
+            logs = [];
+            initialGrid = [];
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            if (isGridCreated) {
+                createGrid();
+            }
+            document.getElementById('resultCard').style.display = 'none';
+            document.getElementById('logsCard').style.display = 'none';
+            logs = [];
+            initialGrid = [];
+        });
+
+        document.getElementById('solveBtn').addEventListener('click', function() {
+            if (!isGridCreated) return;
+
+            // Build grid array from UI
+            const gridData = [];
+            for (let i = 0; i < rows; i++) {
+                gridData[i] = [];
+                for (let j = 0; j < cols; j++) {
+                    const cell = document.getElementById(`cell-${i}-${j}`);
+                    gridData[i][j] = cell.classList.contains('infected') ? 1 : 0;
+                }
+            }
+
+            // Save initial grid
+            initialGrid = JSON.parse(JSON.stringify(gridData));
+            logs = [];
+
+            // Disable button during processing
+            const solveBtn = document.getElementById('solveBtn');
+            solveBtn.disabled = true;
+            solveBtn.textContent = 'Processing...';
+
+            // Call API
+            fetch('/Home/Solve', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(gridData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                solveBtn.disabled = false;
+                solveBtn.textContent = 'Start Algorithm';
+                
+                if (data.error) {
+                    document.getElementById('resultContent').innerHTML = 
+                        `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                    document.getElementById('logsCard').style.display = 'none';
+                } else {
+                    logs = data.logs || [];
+                    const totalDays = data.totalDays || logs.length;
+                    
+                    // Calculate saved cells (non-infected) from the final grid snapshot
+                    let savedCellsCount = 0;
+                    if (logs.length > 0) {
+                        const finalGrid = logs[logs.length - 1].gridSnapshot;
+                        for (let i = 0; i < finalGrid.length; i++) {
+                            for (let j = 0; j < finalGrid[i].length; j++) {
+                                if (finalGrid[i][j] === 0) {
+                                    savedCellsCount++;
+                                }
+                            }
+                        }
+                    } else {
+                        // If no logs, count from initial grid
+                        for (let i = 0; i < initialGrid.length; i++) {
+                            for (let j = 0; j < initialGrid[i].length; j++) {
+                                if (initialGrid[i][j] === 0) {
+                                    savedCellsCount++;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Calculate percentage of cells saved
+                    const totalCells = rows * cols;
+                    const savedPercentage = totalCells > 0 ? ((savedCellsCount / totalCells) * 100).toFixed(2) : 0;
+                    
+                    document.getElementById('resultContent').innerHTML = 
+                        `<div class="alert alert-success">
+                            <h4>Algorithm Results</h4>
+                            <p class="mb-2"><strong>Total Walls needed:</strong> ${data.result}</p>
+                            <p class="mb-2"><strong>Days to fully isolate:</strong> ${totalDays}</p>
+                            <p class="mb-2"><strong>Cells saved:</strong> ${savedPercentage}% (${savedCellsCount} out of ${totalCells} cells)</p>
+                        </div>`;
+                    
+                    if (logs.length > 0) {
+                        currentDayIndex = -1; // Start with Day 0 (initial)
+                        setupNavigationButtons();
+                        displayDayDetails(-1);
+                        updateNavigationButtons();
+                        document.getElementById('logsCard').style.display = 'block';
+                    }
+                }
+                document.getElementById('resultCard').style.display = 'block';
+            })
+            .catch(error => {
+                solveBtn.disabled = false;
+                solveBtn.textContent = 'Start Algorithm';
+                document.getElementById('resultContent').innerHTML = 
+                    `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                document.getElementById('logsCard').style.display = 'none';
+                document.getElementById('resultCard').style.display = 'block';
+            });
+        });
+
+        function createGrid() {
+            grid = [];
+            const container = document.getElementById('gridContainer');
+            container.innerHTML = '';
+            
+            const gridDiv = document.createElement('div');
+            gridDiv.className = 'virus-grid';
+            gridDiv.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            gridDiv.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+            for (let i = 0; i < rows; i++) {
+                grid[i] = [];
+                for (let j = 0; j < cols; j++) {
+                    grid[i][j] = 0;
+                    const cell = document.createElement('div');
+                    cell.className = 'virus-cell';
+                    cell.id = `cell-${i}-${j}`;
+                    cell.innerHTML = '';
+                    cell.addEventListener('click', function() {
+                        toggleCell(i, j);
+                    });
+                    gridDiv.appendChild(cell);
+                }
+            }
+
+            container.appendChild(gridDiv);
+        }
+
+        function toggleCell(row, col) {
+            const cell = document.getElementById(`cell-${row}-${col}`);
+            if (cell.classList.contains('infected')) {
+                cell.classList.remove('infected');
+                cell.innerHTML = '';
+                grid[row][col] = 0;
+            } else {
+                cell.classList.add('infected');
+                grid[row][col] = 1;
+                cell.innerHTML = getVirusIcon('teal');
+            }
+        }
+
+        function getVirusIcon(color = 'teal') {
+            const uniqueId = 'virusGradient-' + color + '-' + Date.now() + Math.random().toString(36).substr(2, 5);
+            
+            const colorMap = {
+                teal: {
+                    main: "#14b8a6",
+                    light: "#2dd4bf",
+                    dark: "#0f766e",
+                    spot: "#0d9488"
+                },
+                amber: {
+                    main: "#f59e0b",
+                    light: "#fbbf24",
+                    dark: "#d97706",
+                    spot: "#f59e0b"
+                },
+                gray: {
+                    main: "#6c757d",
+                    light: "#adb5bd",
+                    dark: "#495057",
+                    spot: "#6c757d"
+                }
+            };
+            
+            const colors = colorMap[color] || colorMap.teal;
+            const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+            
+            // Generate spikes
+            let spikesHtml = '';
+            angles.forEach((angle) => {
+                const rad = (angle * Math.PI) / 180;
+                const baseX = 50 + Math.cos(rad) * 22;
+                const baseY = 50 + Math.sin(rad) * 22;
+                const tipX = 50 + Math.cos(rad) * 42;
+                const tipY = 50 + Math.sin(rad) * 42;
+                
+                spikesHtml += `
+                    <line
+                        x1="${baseX}"
+                        y1="${baseY}"
+                        x2="${tipX}"
+                        y2="${tipY}"
+                        stroke="${colors.main}"
+                        stroke-width="8"
+                        stroke-linecap="round"
+                    />
+                    <circle
+                        cx="${tipX}"
+                        cy="${tipY}"
+                        r="5"
+                        fill="${colors.light}"
+                    />`;
+            });
+            
+            return `<svg 
+                width="35" 
+                height="35" 
+                viewBox="0 0 100 100" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                class="virus-svg"
+            >
+                <defs>
+                    <radialGradient id="${uniqueId}" cx="0.35" cy="0.35" r="0.65">
+                        <stop offset="0%" stop-color="${colors.light}" />
+                        <stop offset="70%" stop-color="${colors.main}" />
+                        <stop offset="100%" stop-color="${colors.dark}" />
+                    </radialGradient>
+                </defs>
+                ${spikesHtml}
+                <circle
+                    cx="50"
+                    cy="50"
+                    r="22"
+                    fill="url(#${uniqueId})"
+                />
+                <circle cx="45" cy="45" r="4" fill="${colors.dark}" opacity="0.6" />
+                <circle cx="55" cy="48" r="3" fill="${colors.dark}" opacity="0.5" />
+                <circle cx="50" cy="55" r="3.5" fill="${colors.dark}" opacity="0.6" />
+                <circle cx="42" cy="52" r="2.5" fill="${colors.dark}" opacity="0.4" />
+                <circle cx="57" cy="54" r="2" fill="${colors.dark}" opacity="0.5" />
+            </svg>`;
+        }
+
+        // Setup navigation buttons (called after logs are loaded)
+        function setupNavigationButtons() {
+            const prevBtn = document.getElementById('prevDayBtn');
+            const nextBtn = document.getElementById('nextDayBtn');
+            
+            if (prevBtn) {
+                // Remove existing listeners by cloning
+                const newPrevBtn = prevBtn.cloneNode(true);
+                prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+                
+                newPrevBtn.addEventListener('click', function() {
+                    if (currentDayIndex > -1) {
+                        currentDayIndex--;
+                        displayDayDetails(currentDayIndex);
+                        updateNavigationButtons();
+                    }
+                });
+            }
+            
+            if (nextBtn) {
+                // Remove existing listeners by cloning
+                const newNextBtn = nextBtn.cloneNode(true);
+                nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+                
+                newNextBtn.addEventListener('click', function() {
+                    if (currentDayIndex < logs.length - 1) {
+                        currentDayIndex++;
+                        displayDayDetails(currentDayIndex);
+                        updateNavigationButtons();
+                    }
+                });
+            }
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevDayBtn');
+            const nextBtn = document.getElementById('nextDayBtn');
+            const dayIndicator = document.getElementById('dayIndicator');
+            
+            if (!prevBtn || !nextBtn || !dayIndicator) return;
+            
+            // Update button states
+            prevBtn.disabled = currentDayIndex <= -1;
+            nextBtn.disabled = currentDayIndex >= logs.length - 1;
+            
+            // Update indicator
+            if (currentDayIndex === -1) {
+                dayIndicator.textContent = 'Day 0 (Initial)';
+            } else {
+                const log = logs[currentDayIndex];
+                dayIndicator.textContent = `Day ${log.dayNumber} of ${logs.length}`;
+            }
+        }
+
+        function displayDayDetails(dayIndex) {
+            const dayDetails = document.getElementById('dayDetails');
+            
+            if (dayIndex === -1) {
+                // Show initial grid
+                dayDetails.innerHTML = `
+                    <h6>Day 0 - Initial State</h6>
+                    <p>Initial grid configuration before algorithm starts.</p>
+                    <div id="dayGridContainer" class="d-flex justify-content-center my-4"></div>
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <span class="badge bg-success me-2">Infected</span> - Cells that are infected
+                            <span class="badge bg-danger ms-2">Walls</span> - Red dashed lines showing isolation barriers
+                        </small>
+                    </div>
+                `;
+                renderGridSnapshot(initialGrid, [], [], [], 'dayGridContainer');
+            } else {
+                const log = logs[dayIndex];
+                
+                // Get grid snapshot (after this day's operations)
+                const gridSnapshot = log.gridSnapshot;
+                
+                // Collect all cells that were quarantined up to this day
+                const allQuarantinedCells = [];
+                for (let i = 0; i <= dayIndex; i++) {
+                    logs[i].chosenRegionCells.forEach(cell => {
+                        allQuarantinedCells.push({r: cell.r, c: cell.c});
+                    });
+                }
+                
+                dayDetails.innerHTML = `
+                    <h6>Day ${log.dayNumber}</h6>
+                    <div class="mb-3">
+                        <p><strong>Walls built this day:</strong> ${log.chosenRegionWalls}</p>
+                        <p><strong>Cells quarantined this day:</strong> ${log.chosenRegionCells.length}</p>
+                        <p><strong>Cells newly infected this day:</strong> ${log.spreadCells.length}</p>
+                        <p><strong>Total cells quarantined so far:</strong> ${allQuarantinedCells.length}</p>
+                    </div>
+                    <div id="dayGridContainer" class="d-flex justify-content-center my-4"></div>
+                    <div class="mt-3">
+                        <small class="text-muted">
+                            <span class="badge bg-success me-2">Infected</span> - Active infected cells
+                            <span class="badge bg-warning text-dark me-2">Newly Infected</span> - Cells that spread this day
+                            <span class="badge bg-secondary me-2">Isolated</span> - Quarantined cells
+                            <span class="badge bg-danger ms-2">Walls</span> - Isolation barriers
+                        </small>
+                    </div>
+                `;
+                
+                renderGridSnapshot(
+                    gridSnapshot, 
+                    log.chosenRegionCells.map(c => ({r: c.r, c: c.c})),
+                    log.spreadCells.map(c => ({r: c.r, c: c.c})),
+                    allQuarantinedCells,
+                    'dayGridContainer'
+                );
+            }
+        }
+
+        function renderGridSnapshot(gridData, quarantinedCells, spreadCells, allQuarantinedCells, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const gridDiv = document.createElement('div');
+            gridDiv.className = 'virus-grid';
+            gridDiv.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            gridDiv.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+            
+            // Create sets for faster lookup
+            const quarantinedSet = new Set(quarantinedCells.map(c => `${c.r},${c.c}`));
+            const spreadSet = new Set(spreadCells.map(c => `${c.r},${c.c}`));
+            const allQuarantinedSet = new Set((allQuarantinedCells || []).map(c => `${c.r},${c.c}`));
+            
+            // Helper function to check if a wall should be drawn on this cell's edge
+            // Walls are ONLY drawn around cells that have been quarantined/isolated up to the current day
+            // This ensures walls appear progressively: Day 1 shows walls around Day 1's zone, 
+            // Day 2 shows walls around Day 1 + Day 2's zones, etc.
+            function shouldDrawWallOnEdge(r, c, dr, dc) {
+                const cellKey = `${r},${c}`;
+                
+                // Only draw walls if there are any quarantined zones up to this day
+                if (allQuarantinedSet.size === 0) {
+                    return false;
+                }
+                
+                // Check if this cell is quarantined (must be in the quarantined set for this day)
+                // We check the set first because it represents what has been isolated up to this day
+                const cellIsQuarantined = allQuarantinedSet.has(cellKey);
+                
+                // Only draw walls on quarantined cells
+                if (!cellIsQuarantined) {
+                    return false;
+                }
+                
+                // Verify the cell value is -1 (quarantined) in the grid snapshot
+                const cellValue = gridData[r][c];
+                if (cellValue !== -1) {
+                    return false;
+                }
+                
+                // Check adjacent cell
+                const adjacentR = r + dr;
+                const adjacentC = c + dc;
+                
+                // If adjacent cell is out of bounds, treat it as non-quarantined (draw wall on boundary)
+                if (adjacentR < 0 || adjacentR >= rows || adjacentC < 0 || adjacentC >= cols) {
+                    return true;
+                }
+                
+                // Check if adjacent cell is NOT quarantined (not in the set of isolated cells)
+                const adjacentKey = `${adjacentR},${adjacentC}`;
+                const adjacentIsQuarantined = allQuarantinedSet.has(adjacentKey);
+                
+                // Also verify adjacent cell value (should not be -1 if not quarantined, or if it's -1 but not in set)
+                const adjacentValue = gridData[adjacentR][adjacentC];
+                const adjacentIsActuallyQuarantined = adjacentValue === -1 && adjacentIsQuarantined;
+                
+                // Draw wall if this cell is quarantined and adjacent cell is not quarantined
+                return !adjacentIsActuallyQuarantined;
+            }
+            
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'virus-cell';
+                    const cellKey = `${i},${j}`;
+                    const cellValue = gridData[i][j];
+                    
+                    // Check walls on all four sides
+                    // Walls are only drawn around cells that have been isolated up to the current day
+                    // Day 0: no walls (no zones isolated)
+                    // Day 1: walls around Day 1's isolated zone
+                    // Day 2: walls around Day 1 + Day 2's isolated zones
+                    // etc.
+                    // let wallClasses = [];
+                    // if (shouldDrawWallOnEdge(i, j, -1, 0)) wallClasses.push('wall-top');
+                    // if (shouldDrawWallOnEdge(i, j, 1, 0)) wallClasses.push('wall-bottom');
+                    // if (shouldDrawWallOnEdge(i, j, 0, -1)) wallClasses.push('wall-left');
+                    // if (shouldDrawWallOnEdge(i, j, 0, 1)) wallClasses.push('wall-right');
+                    // cell.classList.add(...wallClasses);
+
+                    let wallClasses = [];
+                    if (i > 0     && shouldDrawWallOnEdge(i, j, -1, 0)) wallClasses.push('wall-top');
+                    if (i < rows-1 && shouldDrawWallOnEdge(i, j,  1, 0)) wallClasses.push('wall-bottom');
+                    if (j > 0     && shouldDrawWallOnEdge(i, j,  0,-1)) wallClasses.push('wall-left');
+                    if (j < cols-1 && shouldDrawWallOnEdge(i, j,  0, 1)) wallClasses.push('wall-right');
+                    cell.classList.add(...wallClasses);
+
+                    
+                    // Check if this cell is quarantined/isolated
+                    // Only show as isolated if it's in the set of cells isolated up to this day
+                    if (allQuarantinedSet.has(cellKey) && cellValue === -1) {
+                        cell.classList.add('contained');
+                        cell.innerHTML = getVirusIcon('gray'); // Gray icon for isolated/quarantined cells
+                    }
+                    // Check if this cell is newly infected this day
+                    else if (cellValue === 1 && spreadSet.has(cellKey)) {
+                        cell.classList.add('newly-infected');
+                        cell.innerHTML = getVirusIcon('amber');
+                    }
+                    // Check if this cell is infected
+                    else if (cellValue === 1) {
+                        cell.classList.add('infected');
+                        cell.innerHTML = getVirusIcon('teal');
+                    }
+                    // Empty cell
+                    else {
+                        cell.innerHTML = '';
+                    }
+                    
+                    gridDiv.appendChild(cell);
+                }
+            }
+            
+            container.appendChild(gridDiv);
+        }
+    </script>
+}
