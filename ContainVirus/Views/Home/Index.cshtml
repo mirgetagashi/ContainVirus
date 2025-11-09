@@ -337,12 +337,12 @@
                         `<div class="alert alert-success">
                             <h4>Algorithm Results</h4>
                             <p class="mb-2"><strong>Total Walls needed:</strong> ${data.result}</p>
-                            <p class="mb-2"><strong>Days to fully isolate:</strong> ${totalDays}</p>
+                            <p class="mb-2"><strong>Days to fully isolate:</strong> ${totalDays - 1}</p>
                             <p class="mb-2"><strong>Cells saved:</strong> ${savedPercentage}% (${savedCellsCount} out of ${totalCells} cells)</p>
                         </div>`;
                     
                     if (logs.length > 0) {
-                        currentDayIndex = -1; // Start with Day 0 (initial)
+                        currentDayIndex = -1; 
                         setupNavigationButtons();
                         displayDayDetails(-1);
                         updateNavigationButtons();
@@ -668,19 +668,7 @@
                     cell.className = 'virus-cell';
                     const cellKey = `${i},${j}`;
                     const cellValue = gridData[i][j];
-                    
-                    // Check walls on all four sides
-                    // Walls are only drawn around cells that have been isolated up to the current day
-                    // Day 0: no walls (no zones isolated)
-                    // Day 1: walls around Day 1's isolated zone
-                    // Day 2: walls around Day 1 + Day 2's isolated zones
-                    // etc.
-                    // let wallClasses = [];
-                    // if (shouldDrawWallOnEdge(i, j, -1, 0)) wallClasses.push('wall-top');
-                    // if (shouldDrawWallOnEdge(i, j, 1, 0)) wallClasses.push('wall-bottom');
-                    // if (shouldDrawWallOnEdge(i, j, 0, -1)) wallClasses.push('wall-left');
-                    // if (shouldDrawWallOnEdge(i, j, 0, 1)) wallClasses.push('wall-right');
-                    // cell.classList.add(...wallClasses);
+
 
                     let wallClasses = [];
                     if (i > 0     && shouldDrawWallOnEdge(i, j, -1, 0)) wallClasses.push('wall-top');
@@ -690,23 +678,18 @@
                     cell.classList.add(...wallClasses);
 
                     
-                    // Check if this cell is quarantined/isolated
-                    // Only show as isolated if it's in the set of cells isolated up to this day
                     if (allQuarantinedSet.has(cellKey) && cellValue === -1) {
                         cell.classList.add('contained');
-                        cell.innerHTML = getVirusIcon('gray'); // Gray icon for isolated/quarantined cells
+                        cell.innerHTML = getVirusIcon('gray'); 
                     }
-                    // Check if this cell is newly infected this day
                     else if (cellValue === 1 && spreadSet.has(cellKey)) {
                         cell.classList.add('newly-infected');
                         cell.innerHTML = getVirusIcon('amber');
                     }
-                    // Check if this cell is infected
                     else if (cellValue === 1) {
                         cell.classList.add('infected');
                         cell.innerHTML = getVirusIcon('teal');
                     }
-                    // Empty cell
                     else {
                         cell.innerHTML = '';
                     }

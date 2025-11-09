@@ -36,7 +36,6 @@ namespace ContainVirus.Controllers
                     return BadRequest(new { error = "Invalid grid" });
                 }
 
-                // Create a deep copy to avoid modifying the original
                 int[][] gridCopy = new int[grid.Length][];
                 for (int i = 0; i < grid.Length; i++)
                 {
@@ -46,7 +45,6 @@ namespace ContainVirus.Controllers
 
                 var (totalWalls, totalDays, logs) = _solutionWithLogs.ContainVirusWithLogs(gridCopy);
                 
-                // Convert logs to a format that can be serialized to JSON
                 var logsDto = logs.Select(log => new
                 {
                     dayNumber = log.DayNumber,
