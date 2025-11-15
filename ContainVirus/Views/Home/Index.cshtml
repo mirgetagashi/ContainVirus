@@ -174,8 +174,19 @@
                     <label for="cols" class="form-label">Columns</label>
                     <input type="number" class="form-control" id="cols" min="1" max="20" value="1">
                 </div>
-                <div class="col-md-4 d-flex align-items-end">
+                <div class="col-md-4 d-flex align-items-end gap-2">
                     <button class="btn btn-primary" id="createGridBtn">Create Grid</button>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="generateDropdownBtn">
+                            Generate
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="generateRandom">Random</a></li>
+                            <li><a class="dropdown-item" href="#" id="generateEasy">Easy</a></li>
+                            <li><a class="dropdown-item" href="#" id="generateIntermediate">Intermediate</a></li>
+                            <li><a class="dropdown-item" href="#" id="generateHard">Hard</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -252,6 +263,92 @@
             document.getElementById('logsCard').style.display = 'none';
             logs = [];
             initialGrid = [];
+        });
+
+        // Generate grid with difficulty levels (calls backend API)
+        function generateGridWithDifficulty(difficulty) {
+            // Show loading state
+            const dropdownBtn = document.getElementById('generateDropdownBtn');
+            const originalText = dropdownBtn.textContent;
+            dropdownBtn.disabled = true;
+            dropdownBtn.textContent = 'Generating...';
+            
+            // Call backend API
+            fetch('/Home/GenerateGrid', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ difficulty: difficulty })
+            })
+            .then(response => response.json())
+            .then(data => {
+                dropdownBtn.disabled = false;
+                dropdownBtn.textContent = originalText;
+                
+                if (data.error) {
+                    alert('Error: ' + data.error);
+                    return;
+                }
+                
+                // Set grid dimensions
+                rows = data.rows;
+                cols = data.cols;
+                
+                // Update input fields
+                document.getElementById('rows').value = rows;
+                document.getElementById('cols').value = cols;
+                
+                // Create the grid UI
+                createGrid();
+                
+                // Mark infected cells from the matrix
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        if (data.grid[i][j] === 1) {
+                            const cell = document.getElementById(`cell-${i}-${j}`);
+                            cell.classList.add('infected');
+                            grid[i][j] = 1;
+                            cell.innerHTML = getVirusIcon('teal');
+                        }
+                    }
+                }
+                
+                // Show grid and enable solve button
+                isGridCreated = true;
+                document.getElementById('gridCard').style.display = 'block';
+                document.getElementById('solveBtn').disabled = false;
+                document.getElementById('resultCard').style.display = 'none';
+                document.getElementById('logsCard').style.display = 'none';
+                logs = [];
+                initialGrid = [];
+            })
+            .catch(error => {
+                dropdownBtn.disabled = false;
+                dropdownBtn.textContent = originalText;
+                alert('Error generating grid: ' + error.message);
+            });
+        }
+
+        // Add event listeners for dropdown items
+        document.getElementById('generateRandom').addEventListener('click', function(e) {
+            e.preventDefault();
+            generateGridWithDifficulty('random');
+        });
+
+        document.getElementById('generateEasy').addEventListener('click', function(e) {
+            e.preventDefault();
+            generateGridWithDifficulty('easy');
+        });
+
+        document.getElementById('generateIntermediate').addEventListener('click', function(e) {
+            e.preventDefault();
+            generateGridWithDifficulty('intermediate');
+        });
+
+        document.getElementById('generateHard').addEventListener('click', function(e) {
+            e.preventDefault();
+            generateGridWithDifficulty('hard');
         });
 
         document.getElementById('clearBtn').addEventListener('click', function() {

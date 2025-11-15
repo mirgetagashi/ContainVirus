@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using ContainVirus.Models;
 using ContainVirus.Solution;
+using ContainVirus.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ContainVirus.Controllers
@@ -9,11 +10,13 @@ namespace ContainVirus.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly SolutionWithLogs _solutionWithLogs;
+        private readonly GridGenerator _gridGenerator;
 
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
             _solutionWithLogs = new SolutionWithLogs();
+            _gridGenerator = new GridGenerator();
         }
 
         public IActionResult Index()
@@ -24,6 +27,32 @@ namespace ContainVirus.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult GenerateGrid([FromBody] GenerateGridRequest request)
+        {
+            try
+            {
+                if (request == null || string.IsNullOrEmpty(request.Difficulty))
+                {
+                    return BadRequest(new { error = "Difficulty parameter is required" });
+                }
+
+                var (rows, cols, grid) = _gridGenerator.GenerateGrid(request.Difficulty);
+
+                return Ok(new
+                {
+                    rows = rows,
+                    cols = cols,
+                    grid = grid
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating grid");
+                return StatusCode(500, new { error = "An error occurred while generating the grid" });
+            }
         }
 
         [HttpPost]
