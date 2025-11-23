@@ -6,8 +6,4 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="C:\Users\LENOVO\OneDrive\Desktop\Index.cshtml" Link="Index.cshtml" />
-  </ItemGroup>
-
 </Project>
