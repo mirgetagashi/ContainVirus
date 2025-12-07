@@ -19,11 +19,11 @@ The Contain Virus algorithm models the spread of an infection on a 2D grid where
 - **0** = healthy  
 - **-1** = quarantined  
 
-At each simulation “day,” the algorithm performs several steps grounded in classic algorithmic techniques — primarily **Breadth-First Search (BFS)** and the **Greedy strategy**.
+At each simulation “day,” the algorithm performs several steps grounded in classic algorithmic techniques — primarily **Depth-First Search (DFS)** and the **Greedy strategy**.
 
-### **1. Region Detection (BFS)**
-Using **Breadth-First Search**, every connected group of infected cells is identified as a separate region.  
-For each region, BFS determines:
+### **1. Region Detection (DFS)**
+Using **Depth-First Search**, every connected group of infected cells is identified as a separate region.  
+For each region, DFS determines:
 
 - The infected cells belonging to that region  
 - The **frontier cells** (healthy neighbors at risk)  
