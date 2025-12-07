@@ -3,6 +3,8 @@ using ContainVirus.Models;
 using ContainVirus.Solution;
 using ContainVirus.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+
 
 namespace ContainVirus.Controllers
 {
@@ -29,6 +31,7 @@ namespace ContainVirus.Controllers
             return View();
         }
 
+        [EnableRateLimiting("PerIpSolveAndGenerateGrid")]
         [HttpPost]
         public IActionResult GenerateGrid([FromBody] GenerateGridRequest request)
         {
@@ -55,6 +58,7 @@ namespace ContainVirus.Controllers
             }
         }
 
+        [EnableRateLimiting("PerIpSolveAndGenerateGrid")]
         [HttpPost]
         public IActionResult Solve([FromBody] int[][] grid)
         {

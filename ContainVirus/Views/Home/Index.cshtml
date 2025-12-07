@@ -383,48 +383,63 @@
             solveBtn.disabled = true;
             solveBtn.textContent = 'Processing...';
 
-            // Call API
-            fetch('/Home/Solve', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(gridData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                solveBtn.disabled = false;
-                solveBtn.textContent = 'Start Algorithm';
-                
-                if (data.error) {
-                    document.getElementById('resultContent').innerHTML = 
-                        `<div class="alert alert-danger">Error: ${data.error}</div>`;
-                    document.getElementById('logsCard').style.display = 'none';
-                } else {
-                    logs = data.logs || [];
-                    const totalDays = data.totalDays || logs.length;
-                    
-                    // Calculate saved cells (non-infected) from the final grid snapshot
-                    let savedCellsCount = 0;
-                    if (logs.length > 0) {
-                        const finalGrid = logs[logs.length - 1].gridSnapshot;
-                        for (let i = 0; i < finalGrid.length; i++) {
-                            for (let j = 0; j < finalGrid[i].length; j++) {
-                                if (finalGrid[i][j] === 0) {
-                                    savedCellsCount++;
-                                }
-                            }
-                        }
-                    } else {
-                        // If no logs, count from initial grid
-                        for (let i = 0; i < initialGrid.length; i++) {
-                            for (let j = 0; j < initialGrid[i].length; j++) {
-                                if (initialGrid[i][j] === 0) {
-                                    savedCellsCount++;
-                                }
+                    // Call API
+        fetch('/Home/Solve', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(gridData)
+        })
+        .then(async response => {
+            if (!response.ok) {
+                let errorText = '';
+
+                try {
+                    const errJson = await response.json();
+                    errorText = errJson.error || JSON.stringify(errJson);
+                } catch (e) {
+                    errorText = await response.text();
+                }
+
+                throw new Error(`Server error ${response.status}: ${errorText}`);
+            }
+
+            return response.json();
+        })
+        .then(data => {
+            solveBtn.disabled = false;
+            solveBtn.textContent = 'Start Algorithm';
+
+            if (data.error) {
+                document.getElementById('resultContent').innerHTML =
+                    `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                document.getElementById('logsCard').style.display = 'none';
+            } else {
+                logs = data.logs || [];
+                const totalDays = data.totalDays || logs.length;
+
+                // Calculate saved cells (non-infected) from the final grid snapshot
+                let savedCellsCount = 0;
+                if (logs.length > 0) {
+                    const finalGrid = logs[logs.length - 1].gridSnapshot;
+                    for (let i = 0; i < finalGrid.length; i++) {
+                        for (let j = 0; j < finalGrid[i].length; j++) {
+                            if (finalGrid[i][j] === 0) {
+                                savedCellsCount++;
                             }
                         }
                     }
+                } else {
+                    // If no logs, count from initial grid
+                    for (let i = 0; i < initialGrid.length; i++) {
+                        for (let j = 0; j < initialGrid[i].length; j++) {
+                            if (initialGrid[i][j] === 0) {
+                                savedCellsCount++;
+                            }
+                        }
+                    }
+                }
                     
                     // Calculate percentage of cells saved
                     const totalCells = rows * cols;
